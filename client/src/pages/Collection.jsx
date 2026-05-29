@@ -177,7 +177,10 @@ export default function Collection() {
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
             <div>
               <Link to={`/novel/${novel.id}`} style={{ fontWeight: 600, fontSize: '0.95rem', lineHeight: 1.3 }}>{novel.title}</Link>
-              <div style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginTop: 2 }}>{novel.author} {novel.year && `· ${novel.year}`}</div>
+              <div style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginTop: 2 }}>
+                {novel.author}
+                {novel.book_type && ` · ${novel.book_type === 'hardcover' ? '📕 Hardcover' : '📗 Softcover'}`}
+              </div>
             </div>
             {novel.rating && <StarRating rating={novel.rating} small />}
           </div>

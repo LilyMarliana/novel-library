@@ -119,9 +119,13 @@ export default function NovelDetail() {
                       {novel.genre}
                     </span>
                   )}
-                  {novel.year && (
-                    <span style={{ background: 'var(--bg-subtle)', color: 'var(--text-secondary)', padding: '5px 14px', borderRadius: 99, fontSize: '0.82rem' }}>
-                      {novel.year}
+                  {novel.book_type && (
+                    <span style={{
+                      background: novel.book_type === 'hardcover' ? 'var(--peach-soft)' : 'var(--sage-soft)',
+                      color: novel.book_type === 'hardcover' ? '#b36b2e' : '#4a7c63',
+                      padding: '5px 14px', borderRadius: 99, fontSize: '0.82rem', fontWeight: 500,
+                    }}>
+                      {novel.book_type === 'hardcover' ? '📕 Hardcover' : '📗 Softcover'}
                     </span>
                   )}
                   {novel.tags && novel.tags.split(',').filter(Boolean).map(tag => (

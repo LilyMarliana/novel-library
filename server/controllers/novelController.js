@@ -14,7 +14,7 @@ export const getAllNovels = async (req, res) => {
     if (status) { query += ' AND status = ?'; params.push(status) }
     if (genre)  { query += ' AND genre = ?';  params.push(genre)  }
 
-    const allowedSort = ['title', 'author', 'rating', 'created_at', 'updated_at', 'year']
+    const allowedSort = ['title', 'author', 'rating', 'created_at', 'updated_at']
     const safeSort = allowedSort.includes(sort) ? sort : 'created_at'
     query += ` ORDER BY ${safeSort} ${order === 'ASC' ? 'ASC' : 'DESC'}`
 
@@ -81,6 +81,13 @@ export const getDetailedStats = async (req, res) => {
       LIMIT 10
     `)
 
+    const [bookTypeDist] = await pool.query(`
+      SELECT book_type, COUNT(*) as count
+      FROM novels
+      WHERE book_type IS NOT NULL
+      GROUP BY book_type
+    `)
+
     const [selesaiPerMonth] = await pool.query(`
       SELECT 
         DATE_FORMAT(updated_at, '%Y-%m') as month,
@@ -93,7 +100,7 @@ export const getDetailedStats = async (req, res) => {
       ORDER BY month ASC
     `)
 
-    res.json({ perMonth, ratingDist, genreDist, topAuthors, selesaiPerMonth })
+    res.json({ perMonth, ratingDist, genreDist, topAuthors, bookTypeDist, selesaiPerMonth })
   } catch (err) {
     res.status(500).json({ error: err.message })
   }
@@ -111,11 +118,11 @@ export const getNovel = async (req, res) => {
 
 export const createNovel = async (req, res) => {
   try {
-    const { title, author, genre, year, synopsis, status, rating, review, tags } = req.body
+    const { title, author, genre, book_type, synopsis, status, rating, review, tags } = req.body
     const cover_image = req.file ? req.file.filename : null
     const [result] = await pool.query(
-      'INSERT INTO novels (title, author, genre, year, synopsis, cover_image, status, rating, review, tags) VALUES (?,?,?,?,?,?,?,?,?,?)',
-      [title, author, genre, year, synopsis, cover_image, status || 'belum', rating || null, review || null, tags || null]
+      'INSERT INTO novels (title, author, genre, book_type, synopsis, cover_image, status, rating, review, tags) VALUES (?,?,?,?,?,?,?,?,?,?)',
+      [title, author, genre, book_type || null, synopsis, cover_image, status || 'belum', rating || null, review || null, tags || null]
     )
     res.status(201).json({ id: result.insertId, message: 'Novel berhasil ditambahkan' })
   } catch (err) {
@@ -125,7 +132,7 @@ export const createNovel = async (req, res) => {
 
 export const updateNovel = async (req, res) => {
   try {
-    const { title, author, genre, year, synopsis, status, rating, review, tags } = req.body
+    const { title, author, genre, book_type, synopsis, status, rating, review, tags } = req.body
     const [existing] = await pool.query('SELECT cover_image FROM novels WHERE id = ?', [req.params.id])
     if (!existing.length) return res.status(404).json({ error: 'Novel tidak ditemukan' })
 
@@ -136,8 +143,8 @@ export const updateNovel = async (req, res) => {
     }
 
     await pool.query(
-      'UPDATE novels SET title=?, author=?, genre=?, year=?, synopsis=?, cover_image=?, status=?, rating=?, review=?, tags=?, updated_at=NOW() WHERE id=?',
-      [title, author, genre, year, synopsis, cover_image, status, rating || null, review || null, tags || null, req.params.id]
+      'UPDATE novels SET title=?, author=?, genre=?, book_type=?, synopsis=?, cover_image=?, status=?, rating=?, review=?, tags=?, updated_at=NOW() WHERE id=?',
+      [title, author, genre, book_type || null, synopsis, cover_image, status, rating || null, review || null, tags || null, req.params.id]
     )
     res.json({ message: 'Novel berhasil diupdate' })
   } catch (err) {

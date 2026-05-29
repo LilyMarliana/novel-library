@@ -30,7 +30,7 @@ export default function NovelForm() {
   const { toast, showToast, hideToast } = useToast()
 
   const [form, setForm] = useState({
-    title: '', author: '', genre: '', year: '',
+    title: '', author: '', genre: '', book_type: '',
     synopsis: '', status: 'belum', rating: '', review: '', tags: ''
   })
   const [coverFile, setCoverFile]         = useState(null)
@@ -45,7 +45,7 @@ export default function NovelForm() {
         const n = r.data
         setForm({
           title: n.title || '', author: n.author || '',
-          genre: n.genre || '', year: n.year || '',
+          genre: n.genre || '', book_type: n.book_type || '',
           synopsis: n.synopsis || '', status: n.status || 'belum',
           rating: n.rating || '', review: n.review || '', tags: n.tags || ''
         })
@@ -125,6 +125,7 @@ export default function NovelForm() {
                 </div>
               )}
 
+              {/* Cover */}
               <div>
                 <label style={labelStyle}>Cover Novel</label>
                 <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
@@ -153,6 +154,7 @@ export default function NovelForm() {
                 </div>
               </div>
 
+              {/* Judul & Penulis */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                 <div>
                   <label style={labelStyle}>Judul <span style={{ color: '#c0392b' }}>*</span></label>
@@ -164,6 +166,7 @@ export default function NovelForm() {
                 </div>
               </div>
 
+              {/* Genre & Jenis Buku */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                 <div>
                   <label style={labelStyle}>Genre</label>
@@ -173,16 +176,35 @@ export default function NovelForm() {
                   </select>
                 </div>
                 <div>
-                  <label style={labelStyle}>Tahun Terbit</label>
-                  <input name="year" value={form.year} onChange={handleChange} placeholder="2024" type="number" min="1800" max="2099" style={inputStyle} />
+                  <label style={labelStyle}>Jenis Buku</label>
+                  <div style={{ display: 'flex', gap: 10 }}>
+                    {[
+                      { value: 'hardcover', label: '📕 Hardcover' },
+                      { value: 'softcover', label: '📗 Softcover' },
+                    ].map(t => (
+                      <button key={t.value} type="button"
+                        onClick={() => setForm(f => ({ ...f, book_type: f.book_type === t.value ? '' : t.value }))}
+                        style={{
+                          flex: 1, padding: '10px 8px', borderRadius: 'var(--radius-sm)',
+                          border: `2px solid ${form.book_type === t.value ? 'var(--pink)' : 'var(--border)'}`,
+                          background: form.book_type === t.value ? 'var(--pink-soft)' : 'var(--bg-main)',
+                          cursor: 'pointer', fontFamily: 'var(--font-body)',
+                          fontSize: '0.82rem', fontWeight: form.book_type === t.value ? 600 : 400,
+                          transition: 'all 0.2s',
+                        }}
+                      >{t.label}</button>
+                    ))}
+                  </div>
                 </div>
               </div>
 
+              {/* Synopsis */}
               <div>
                 <label style={labelStyle}>Sinopsis</label>
                 <textarea name="synopsis" value={form.synopsis} onChange={handleChange} placeholder="Ceritakan sedikit tentang novel ini..." rows={4} style={{ ...inputStyle, resize: 'vertical' }} />
               </div>
 
+              {/* Status */}
               <div>
                 <label style={labelStyle}>Status Baca</label>
                 <div style={{ display: 'flex', gap: 10 }}>
@@ -206,21 +228,25 @@ export default function NovelForm() {
                 </div>
               </div>
 
+              {/* Rating */}
               <div>
                 <label style={labelStyle}>Rating Pribadi</label>
                 <StarPicker />
               </div>
 
+              {/* Review */}
               <div>
                 <label style={labelStyle}>Review / Catatan</label>
                 <textarea name="review" value={form.review} onChange={handleChange} placeholder="Tulis review atau catatan pribadi kamu..." rows={3} style={{ ...inputStyle, resize: 'vertical' }} />
               </div>
 
+              {/* Tags */}
               <div>
                 <label style={labelStyle}>Tag Pribadi</label>
                 <TagInput value={form.tags} onChange={(val) => setForm(f => ({ ...f, tags: val }))} />
               </div>
 
+              {/* Buttons */}
               <div style={{ display: 'flex', gap: 12, paddingTop: 8 }}>
                 <button type="button" onClick={() => navigate(-1)} style={{
                   flex: 1, padding: '12px', borderRadius: 'var(--radius-sm)',

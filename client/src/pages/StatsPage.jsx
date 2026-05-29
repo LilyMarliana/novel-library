@@ -172,6 +172,33 @@ export default function StatsPage() {
             )}
           </div>
 
+          {/* Book Type */}
+            {detail?.bookTypeDist?.length > 0 && (
+              <div style={{
+                background: 'var(--bg-card)', border: '1px solid var(--border)',
+                borderRadius: 'var(--radius-md)', padding: 24, boxShadow: 'var(--shadow-sm)',
+                marginBottom: 24,
+              }}>
+                <SectionTitle>📚 Jenis Buku</SectionTitle>
+                <div style={{ display: 'flex', gap: 20 }}>
+                  {detail.bookTypeDist.map(b => (
+                    <div key={b.book_type} style={{
+                      flex: 1, background: b.book_type === 'hardcover' ? 'var(--peach-soft)' : 'var(--sage-soft)',
+                      borderRadius: 'var(--radius-md)', padding: 20, textAlign: 'center',
+                    }}>
+                      <div style={{ fontSize: 36, marginBottom: 8 }}>
+                        {b.book_type === 'hardcover' ? '📕' : '📗'}
+                      </div>
+                      <div style={{ fontWeight: 700, fontSize: '1.5rem', fontFamily: 'var(--font-display)' }}>{b.count}</div>
+                      <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', textTransform: 'capitalize' }}>
+                        {b.book_type}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
           {/* Top Penulis */}
           {detail?.topAuthors?.length > 0 && (
             <div style={{

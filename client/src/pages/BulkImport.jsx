@@ -8,9 +8,9 @@ import Toast from '../components/Toast'
 import useToast from '../components/useToast'
 import { createNovel } from '../services/api'
 
-const TEMPLATE_CSV = `title,author,genre,year,status,rating,review,tags
-Harry Potter dan Batu Bertuah,J.K. Rowling,Fantasy,1997,sudah,5,Novel luar biasa!,favorit
-Laskar Pelangi,Andrea Hirata,Historical,2005,sudah,5,Sangat menginspirasi,favorit`
+const TEMPLATE_CSV = `title,author,genre,book_type,status,rating,review,tags
+Harry Potter dan Batu Bertuah,J.K. Rowling,Fantasy,hardcover,sudah,5,Novel luar biasa!,favorit
+Laskar Pelangi,Andrea Hirata,Historical,softcover,sudah,5,Sangat menginspirasi,favorit`
 
 const VALID_STATUS = ['belum', 'sedang', 'sudah']
 const VALID_GENRE  = ['Romance', 'Fantasy', 'Mystery', 'Horror', 'Historical', 'Sci-Fi', 'Thriller']
@@ -77,7 +77,7 @@ export default function BulkImport() {
         data.append('title',   row.title)
         data.append('author',  row.author)
         data.append('genre',   row.genre || '')
-        data.append('year',    row.year || '')
+        data.append('book_type', row.book_type || '')
         data.append('status',  VALID_STATUS.includes(row.status) ? row.status : 'belum')
         data.append('rating',  row.rating || '')
         data.append('review',  row.review || '')
@@ -127,7 +127,7 @@ export default function BulkImport() {
               File CSV harus memiliki kolom berikut (title & author wajib, lainnya opsional):
             </p>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
-              {['title *', 'author *', 'genre', 'year', 'status', 'rating', 'review', 'tags'].map(col => (
+              {['title *', 'author *', 'genre', 'book_type', 'status', 'rating', 'review', 'tags'].map(col => (
                 <span key={col} style={{
                   background: col.includes('*') ? 'var(--pink-soft)' : 'var(--bg-subtle)',
                   color: col.includes('*') ? '#a0526b' : 'var(--text-secondary)',
@@ -135,12 +135,13 @@ export default function BulkImport() {
                 }}>{col}</span>
               ))}
             </div>
-            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: 16, lineHeight: 1.8 }}>
-              • <strong>status:</strong> belum / sedang / sudah<br />
-              • <strong>rating:</strong> angka 1-5<br />
-              • <strong>genre:</strong> Romance / Fantasy / Mystery / Horror / Historical / Sci-Fi / Thriller<br />
-              • <strong>tags:</strong> pisahkan dengan titik koma (favorit;pinjaman)
-            </div>
+              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: 16, lineHeight: 1.8 }}>
+                • <strong>status:</strong> belum / sedang / sudah<br />
+                • <strong>rating:</strong> angka 1-5<br />
+                • <strong>genre:</strong> Romance / Fantasy / Mystery / Horror / Historical / Sci-Fi / Thriller<br />
+                • <strong>book_type:</strong> hardcover / softcover<br />
+                • <strong>tags:</strong> pisahkan dengan koma (favorit,pinjaman)
+              </div>
             <button onClick={downloadTemplate} style={{
               padding: '8px 18px', borderRadius: 'var(--radius-sm)',
               background: 'var(--bg-subtle)', border: '1px solid var(--border)',
@@ -212,7 +213,7 @@ export default function BulkImport() {
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
                   <thead>
                     <tr style={{ background: 'var(--bg-subtle)' }}>
-                      {['Judul', 'Penulis', 'Genre', 'Tahun', 'Status', 'Rating'].map(h => (
+                      {['Judul', 'Penulis', 'Genre', 'Jenis', 'Status', 'Rating'].map(h => (
                         <th key={h} style={{ padding: '10px 14px', textAlign: 'left', color: 'var(--text-secondary)', fontWeight: 600, whiteSpace: 'nowrap' }}>{h}</th>
                       ))}
                     </tr>
@@ -223,7 +224,9 @@ export default function BulkImport() {
                         <td style={{ padding: '10px 14px', fontWeight: 500 }}>{row.title}</td>
                         <td style={{ padding: '10px 14px', color: 'var(--text-secondary)' }}>{row.author}</td>
                         <td style={{ padding: '10px 14px', color: 'var(--text-secondary)' }}>{row.genre || '-'}</td>
-                        <td style={{ padding: '10px 14px', color: 'var(--text-secondary)' }}>{row.year || '-'}</td>
+                        <td style={{ padding: '10px 14px', color: 'var(--text-secondary)' }}>
+                          {row.book_type ? (row.book_type === 'hardcover' ? '📕 Hardcover' : '📗 Softcover') : '-'}
+                        </td>
                         <td style={{ padding: '10px 14px' }}>
                           <span style={{
                             background: row.status === 'sudah' ? 'var(--sage-soft)' : row.status === 'sedang' ? 'var(--peach-soft)' : 'var(--sky-soft)',
